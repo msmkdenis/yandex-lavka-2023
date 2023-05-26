@@ -6,8 +6,6 @@ import lombok.*;
 import java.util.Objects;
 import java.util.Set;
 
-import static jakarta.persistence.CascadeType.ALL;
-
 @Getter
 @Setter
 @Builder
@@ -16,6 +14,10 @@ import static jakarta.persistence.CascadeType.ALL;
 @Entity
 @Table(name = "region")
 public class Region {
+
+    public Region(Integer regionId) {
+        this.regionId = regionId;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

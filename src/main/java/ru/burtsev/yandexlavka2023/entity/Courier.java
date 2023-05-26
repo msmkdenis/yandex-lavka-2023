@@ -1,7 +1,6 @@
 package ru.burtsev.yandexlavka2023.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import ru.burtsev.yandexlavka2023.dto.CourierType;
 
@@ -18,6 +17,8 @@ import static jakarta.persistence.CascadeType.ALL;
 @Entity
 @Table(name = "couriers")
 public class Courier {
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

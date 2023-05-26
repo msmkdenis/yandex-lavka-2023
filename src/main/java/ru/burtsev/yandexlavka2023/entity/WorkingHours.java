@@ -17,6 +17,16 @@ import java.util.Set;
 @Table(name = "working_hours")
 public class WorkingHours {
 
+    public WorkingHours(LocalTime startTime, LocalTime endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    @Override
+    public String toString() {
+        return startTime + "-" + endTime;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
