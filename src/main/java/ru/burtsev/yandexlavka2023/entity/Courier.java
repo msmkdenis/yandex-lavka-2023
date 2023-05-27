@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.burtsev.yandexlavka2023.dto.CourierType;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
-import static jakarta.persistence.CascadeType.ALL;
 
 @Getter
 @Setter
@@ -19,7 +18,6 @@ import static jakarta.persistence.CascadeType.ALL;
 public class Courier {
 
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -29,17 +27,55 @@ public class Courier {
     @Column(name = "courier_type")
     private CourierType courierType;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE})
     @JoinTable(name = "courier_region",
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "region_id"))
-    private Set<Region> regions;
+    private Set<Region> regions = new HashSet<>();
 
-    @ManyToMany(cascade = ALL)
+    public void addRegion(Region region) {
+        this.regions.add(region);
+        region.getCouriers().add(this);
+    }
+
+    public void removeRegion(long regionId) {
+        Region region = this.regions
+                .stream()
+                .filter(t -> t.getId() == regionId)
+                .findFirst().orElse(null);
+        if (region != null) {
+            this.regions.remove(region);
+            region.getCouriers().remove(this);
+        }
+    }
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE})
     @JoinTable(name = "courier_working_hours",
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "working_hours_id"))
-    private Set<WorkingHours> workingHours;
+    private Set<WorkingHour> workingHours = new HashSet<>();
+
+    public void addWorkingHour(WorkingHour workingHour) {
+        this.workingHours.add(workingHour);
+        workingHour.getCouriers().add(this);
+    }
+
+    public void removeWorkingHour(long workingHourId) {
+        WorkingHour workingHour = this.workingHours
+                .stream()
+                .filter(t -> t.getId() == workingHourId)
+                .findFirst().orElse(null);
+        if (workingHour != null) {
+            this.workingHours.remove(workingHour);
+            workingHour.getCouriers().remove(this);
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,8 +1,10 @@
 package ru.burtsev.yandexlavka2023.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,8 +29,12 @@ public class Region {
     @Column(name = "region_id")
     private Integer regionId;
 
-    @ManyToMany(mappedBy = "regions", cascade = CascadeType.ALL)
-    private Set<Courier> regions;
+    @ManyToMany(mappedBy = "regions",
+            cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JsonIgnore
+    private Set<Courier> couriers = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
