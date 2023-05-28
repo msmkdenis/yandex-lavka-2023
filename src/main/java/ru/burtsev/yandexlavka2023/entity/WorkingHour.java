@@ -43,7 +43,8 @@ public class WorkingHour {
     @DateTimeFormat
     private LocalTime endTime;
 
-    @ManyToMany(mappedBy = "workingHours",
+    @ManyToMany(
+            mappedBy = "workingHours",
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})

@@ -27,7 +27,7 @@ public class Courier {
     @Column(name = "courier_type")
     private CourierType courierType;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
@@ -52,7 +52,7 @@ public class Courier {
         }
     }
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})

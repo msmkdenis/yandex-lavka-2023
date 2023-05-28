@@ -76,4 +76,13 @@ public class CourierServiceImpl implements CourierService {
 
         return new CreateCouriersResponse(courierDtos);
     }
+
+    @Override
+    public CourierDto getCourierById(Long courierId) {
+        Optional<Courier> courier = courierRepository.findById(courierId);
+        if (courier.isPresent()) {
+            return CourierMapper.toCourierDto(courier.get());
+        }
+        return null;
+    }
 }
