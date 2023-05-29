@@ -1,5 +1,6 @@
 package ru.burtsev.yandexlavka2023.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -29,7 +30,7 @@ public class Courier {
     @Column(name = "courier_type")
     private CourierType courierType;
 
-    @ManyToMany(fetch = FetchType.EAGER,
+    @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
@@ -37,6 +38,7 @@ public class Courier {
     @JoinTable(name = "courier_region",
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "region_id"))
+    @JsonIgnore
     private Set<Region> regions = new HashSet<>();
 
     public void addRegion(Region region) {
@@ -55,7 +57,7 @@ public class Courier {
         }
     }
 
-    @ManyToMany(fetch = FetchType.EAGER,
+    @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
@@ -63,6 +65,7 @@ public class Courier {
     @JoinTable(name = "courier_working_hours",
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "working_hours_id"))
+    @JsonIgnore
     private Set<WorkingHour> workingHours = new HashSet<>();
 
     public void addWorkingHour(WorkingHour workingHour) {

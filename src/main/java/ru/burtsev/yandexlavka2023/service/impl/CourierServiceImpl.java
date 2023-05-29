@@ -1,4 +1,4 @@
-package ru.burtsev.yandexlavka2023.service;
+package ru.burtsev.yandexlavka2023.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,8 @@ import ru.burtsev.yandexlavka2023.mapper.CourierMapper;
 import ru.burtsev.yandexlavka2023.repository.CourierRepository;
 import ru.burtsev.yandexlavka2023.repository.RegionRepository;
 import ru.burtsev.yandexlavka2023.repository.WorkingHourRepository;
+import ru.burtsev.yandexlavka2023.service.CourierService;
+import ru.burtsev.yandexlavka2023.service.CouriersRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,11 +128,7 @@ public class CourierServiceImpl implements CourierService {
     }
 
     private Courier findCourierOtThrow(Long id) {
-        return courierRepository.findById(id)
+        return courierRepository.findFullEntityById(id)
                 .orElseThrow(() -> new NotFound(String.format("Courier с id=%d не найден!", id)));
-    }
-
-    private int getPageNumber(int from, int size) {
-        return from / size;
     }
 }

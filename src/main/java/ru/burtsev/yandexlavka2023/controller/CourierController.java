@@ -11,6 +11,8 @@ import ru.burtsev.yandexlavka2023.dto.CourierDto;
 import ru.burtsev.yandexlavka2023.dto.CreateCourierRequest;
 import ru.burtsev.yandexlavka2023.dto.CreateCouriersResponse;
 import ru.burtsev.yandexlavka2023.dto.GetCouriersResponse;
+import ru.burtsev.yandexlavka2023.entity.Courier;
+import ru.burtsev.yandexlavka2023.repository.CourierRepository;
 import ru.burtsev.yandexlavka2023.service.CourierService;
 
 @RestController
@@ -21,6 +23,7 @@ import ru.burtsev.yandexlavka2023.service.CourierService;
 public class CourierController {
 
     private final CourierService courierService;
+    private final CourierRepository courierRepository;
 
     @PostMapping
     public CreateCouriersResponse saveCouriers(@RequestBody @Valid CreateCourierRequest courierRequest){
@@ -30,6 +33,11 @@ public class CourierController {
     @GetMapping("/{courierId}")
     public CourierDto getCourierById(@PathVariable Long courierId){
         return courierService.getCourierById(courierId);
+    }
+
+    @GetMapping("/id/{courierId}")
+    public Courier getCourierId(@PathVariable Long courierId){
+        return courierRepository.findById(courierId).get();
     }
 
     @GetMapping
