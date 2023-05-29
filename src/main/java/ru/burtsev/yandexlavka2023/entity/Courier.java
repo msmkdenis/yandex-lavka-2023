@@ -2,6 +2,8 @@ package ru.burtsev.yandexlavka2023.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import ru.burtsev.yandexlavka2023.dto.CourierType;
 
 import java.util.HashSet;
@@ -31,6 +33,7 @@ public class Courier {
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "courier_region",
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "region_id"))
@@ -56,6 +59,7 @@ public class Courier {
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "courier_working_hours",
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "working_hours_id"))
@@ -82,14 +86,11 @@ public class Courier {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Courier courier = (Courier) o;
-        return Objects.equals(id, courier.id)
-                && courierType == courier.courierType
-                && Objects.equals(regions, courier.regions)
-                && Objects.equals(workingHours, courier.workingHours);
+        return Objects.equals(id, courier.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, courierType, regions, workingHours);
+        return Objects.hash(id);
     }
 }

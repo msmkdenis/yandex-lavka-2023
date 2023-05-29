@@ -10,4 +10,5 @@ public interface CourierService {
 
     CourierDto getCourierById(Long courierId);
 
+    void deleteCourierById(Long courierId);
 }

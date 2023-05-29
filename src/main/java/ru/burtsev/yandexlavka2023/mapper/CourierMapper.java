@@ -29,7 +29,11 @@ public class CourierMapper {
         return workingHoursString.stream()
                 .map(workingHour -> {
                     String[] split = workingHour.split("-");
-                    return new WorkingHour(LocalTime.parse(split[0]), LocalTime.parse(split[1]), workingHour);
+                    return WorkingHour.builder()
+                            .startTime(LocalTime.parse(split[0]))
+                            .endTime(LocalTime.parse(split[1]))
+                            .startTimeEndTime(workingHour)
+                            .build();
                 })
                 .collect(Collectors.toSet());
     }
@@ -37,11 +41,9 @@ public class CourierMapper {
     public static Set<Region> toRegions(CreateCourierDto createCourierDto) {
         Set<Integer> regionInteger = createCourierDto.getRegions();
         return regionInteger.stream()
-                .map(regionId -> {
-                    return Region.builder()
-                            .regionId(regionId)
-                            .build();
-                })
+                .map(regionId -> Region.builder()
+                        .regionId(regionId)
+                        .build())
                 .collect(Collectors.toSet());
     }
 
