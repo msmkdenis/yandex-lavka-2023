@@ -1,5 +1,6 @@
 package ru.burtsev.yandexlavka2023.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.*;
@@ -84,6 +85,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    ProblemDetail handleConstraintViolation(ConstraintViolationException e) {
+        log.info(e.getClass().toString());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage());
+        problemDetail.setTitle("Bad request");
+        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
+        problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
+        return problemDetail;
+    }
+
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,

@@ -3,12 +3,12 @@ package ru.burtsev.yandexlavka2023.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import ru.burtsev.yandexlavka2023.dto.CourierDto;
-import ru.burtsev.yandexlavka2023.dto.CreateCourierDto;
-import ru.burtsev.yandexlavka2023.dto.CreateCourierRequest;
-import ru.burtsev.yandexlavka2023.dto.CreateCouriersResponse;
+import ru.burtsev.yandexlavka2023.dto.*;
 import ru.burtsev.yandexlavka2023.entity.Courier;
 import ru.burtsev.yandexlavka2023.entity.Region;
 import ru.burtsev.yandexlavka2023.entity.WorkingHour;
@@ -42,12 +42,12 @@ public class CourierServiceImpl implements CourierService {
 
         List<Courier> savedCouriers = new ArrayList<>();
 
-        for (CreateCourierDto dto: createCourierDtos) {
+        for (CreateCourierDto dto : createCourierDtos) {
 
             Set<WorkingHour> workingHours = CourierMapper.toWorkingHours(dto);
             Set<Region> regions = CourierMapper.toRegions(dto);
 
-            for (WorkingHour hour: workingHours) {
+            for (WorkingHour hour : workingHours) {
                 Optional<WorkingHour> workingHourEntity = workingHourRepository
                         .findWorkingHourByStartTimeAndEndTime(hour.getStartTime(), hour.getEndTime());
                 if (workingHourEntity.isEmpty()) {
@@ -56,7 +56,7 @@ public class CourierServiceImpl implements CourierService {
             }
 
 
-            for (Region region: regions) {
+            for (Region region : regions) {
                 Optional<Region> regionEntity = regionRepository.findRegionByRegionId(region.getRegionId());
                 if (regionEntity.isEmpty()) {
                     regionRepository.save(region);
@@ -85,7 +85,24 @@ public class CourierServiceImpl implements CourierService {
     @Override
     public CourierDto getCourierById(Long courierId) {
         Courier courier = findCourierOtThrow(courierId);
+
         return CourierMapper.toCourierDto(courier);
+    }
+
+    @Override
+    public GetCouriersResponse getCouriers(Integer offset, Integer limit) {
+        if (offset == limit) {
+            throw new BadRequest(String.format("Параметры offset=%d и limit=%d не должны быть равны", offset, limit));
+        }
+
+        List<Courier> couriers = courierRepository.findAll(new CouriersRequest(offset, limit, Sort.unsorted()))
+                .stream().collect(Collectors.toList());
+
+        return GetCouriersResponse.builder()
+                .couriers(couriers.stream().map(CourierMapper::toCourierDto).collect(Collectors.toList()))
+                .offset(offset)
+                .limit(limit)
+                .build();
     }
 
     @Override
@@ -96,10 +113,10 @@ public class CourierServiceImpl implements CourierService {
     private List<CreateCourierDto> validateCreateCourierRequest(CreateCourierRequest courierRequest) {
         List<CreateCourierDto> createCourierDtos = courierRequest.getCouriers();
 
-        for (CreateCourierDto dto: createCourierDtos) {
-            if (dto.getCourierType()==null) {
+        for (CreateCourierDto dto : createCourierDtos) {
+            if (dto.getCourierType() == null) {
                 throw new BadRequest("Тип курьера не может быть null");
-            }else if(dto.getRegions() == null) {
+            } else if (dto.getRegions() == null) {
                 throw new BadRequest("Регионы работы курьера не могут быть null");
             } else if (dto.getWorkingHours() == null) {
                 throw new BadRequest("Часы работы курьера не могут быть null");
@@ -110,6 +127,10 @@ public class CourierServiceImpl implements CourierService {
 
     private Courier findCourierOtThrow(Long id) {
         return courierRepository.findById(id)
-                .orElseThrow(()->new NotFound(String.format("Courier с id=%d не найден!", id)));
+                .orElseThrow(() -> new NotFound(String.format("Courier с id=%d не найден!", id)));
+    }
+
+    private int getPageNumber(int from, int size) {
+        return from / size;
     }
 }
