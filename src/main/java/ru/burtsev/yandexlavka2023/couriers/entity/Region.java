@@ -1,12 +1,11 @@
-package ru.burtsev.yandexlavka2023.entity;
+package ru.burtsev.yandexlavka2023.couriers.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import ru.burtsev.yandexlavka2023.orders.entity.Order;
 
-import java.util.Objects;
-import java.util.Set;
-
-import static jakarta.persistence.CascadeType.ALL;
+import java.util.*;
 
 @Getter
 @Setter
@@ -17,6 +16,10 @@ import static jakarta.persistence.CascadeType.ALL;
 @Table(name = "region")
 public class Region {
 
+    public Region(Integer regionId) {
+        this.regionId = regionId;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -25,8 +28,20 @@ public class Region {
     @Column(name = "region_id")
     private Integer regionId;
 
-    @ManyToMany(mappedBy = "regions", cascade = CascadeType.ALL)
-    private Set<Courier> regions;
+    @OneToMany(mappedBy = "regions")
+    private List<Order> orders = new ArrayList<>();
+
+    public void addOrder(Order order) {
+        this.orders.add(order);
+        order.setRegions(this);
+    }
+
+    @ManyToMany(mappedBy = "regions",
+            cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE})
+    @JsonIgnore
+    private Set<Courier> couriers = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

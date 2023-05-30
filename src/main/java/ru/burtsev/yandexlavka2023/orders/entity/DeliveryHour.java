@@ -1,10 +1,12 @@
-package ru.burtsev.yandexlavka2023.entity;
+package ru.burtsev.yandexlavka2023.orders.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,8 +16,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "working_hours")
-public class WorkingHours {
+@Table(name = "delivery_hours")
+public class DeliveryHour {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,19 +32,33 @@ public class WorkingHours {
     @DateTimeFormat
     private LocalTime endTime;
 
-    @ManyToMany(mappedBy = "workingHours", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Courier> workingHours;
+    @ManyToMany(
+            mappedBy = "deliveryHours",
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE})
+    @JsonIgnore
+    private Set<Order> orders = new HashSet<>();
+
+    @JsonIgnore
+    @Column(name = "start_time_end_time")
+    private String startTimeEndTime;
+
+    @Override
+    public String toString() {
+        return startTime + "-" + endTime;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WorkingHours that = (WorkingHours) o;
-        return Objects.equals(id, that.id) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime);
+        DeliveryHour that = (DeliveryHour) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startTime, endTime);
+        return Objects.hash(id);
     }
 }

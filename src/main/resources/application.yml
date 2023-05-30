@@ -2,6 +2,9 @@ server:
   port: 8080
 ---
 spring:
+  mvc:
+    problemdetails:
+      enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/lavka
@@ -9,15 +12,23 @@ spring:
     password: postgres
   jpa:
     open-in-view: 'false'
+    show-sql: true
     properties:
       hibernate:
         format_sql: 'true'
+        generate_statistics: 'true'
     hibernate:
       ddl-auto: create
-    show-sql: true
+
   sql:
     init:
       mode: always
+
+logging:
+  level:
+    org.hibernate.stat: debug
+    root: info
+
 
 ---
 spring:
