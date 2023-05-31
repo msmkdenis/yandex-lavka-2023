@@ -3,10 +3,13 @@ package ru.burtsev.yandexlavka2023.orders.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.burtsev.yandexlavka2023.couriers.entity.Region;
 import ru.burtsev.yandexlavka2023.couriers.repository.RegionRepository;
+import ru.burtsev.yandexlavka2023.couriers.service.CouriersRequest;
 import ru.burtsev.yandexlavka2023.exception.BadRequest;
+import ru.burtsev.yandexlavka2023.exception.NotFound;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
 import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
@@ -39,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<Order> savedOrder = new ArrayList<>(createOrderDtos.size());
 
-        for (CreateOrderDto dto: createOrderDtos) {
+        for (CreateOrderDto dto : createOrderDtos) {
             Set<DeliveryHour> deliveryHours = OrderMapper.toDeliveryHours(dto);
 
             for (DeliveryHour hour : deliveryHours) {
@@ -72,6 +75,32 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(OrderMapper::toOrderDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDto getOrderById(Long orderId) {
+        Order order = findOrderOtThrow(orderId);
+
+        return OrderMapper.toOrderDto(order);
+    }
+
+    @Override
+    public List<OrderDto> getOrders(Integer offset, Integer limit) {
+        if (offset == limit) {
+            throw new BadRequest(String.format("Параметры offset=%d и limit=%d не должны быть равны", offset, limit));
+        }
+
+        List<Order> orders = orderRepository.findAll(new CouriersRequest(offset, limit, Sort.unsorted()))
+                .stream().collect(Collectors.toList());
+
+        return orders.stream()
+                .map(OrderMapper::toOrderDto)
+                .collect(Collectors.toList());
+    }
+
+    private Order findOrderOtThrow(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new NotFound(String.format("Order с id=%d не найден!", id)));
     }
 
     private List<CreateOrderDto> validateCreateOrderRequest(CreateOrderRequest createOrderRequest) {

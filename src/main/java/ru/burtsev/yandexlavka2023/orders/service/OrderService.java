@@ -8,4 +8,8 @@ import java.util.List;
 public interface OrderService {
 
     List<OrderDto> saveOrders(CreateOrderRequest createOrderRequest);
+
+    OrderDto getOrderById(Long orderId);
+
+    List<OrderDto> getOrders(Integer offset, Integer limit);;
 }

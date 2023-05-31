@@ -29,7 +29,7 @@ public class Order {
     private Float weight;
 
     @ManyToOne
-   @JoinColumn(name = "region_id")
+    @JoinColumn(name = "region_id")
     private Region regions;
 
     @Column(name = "cost")
