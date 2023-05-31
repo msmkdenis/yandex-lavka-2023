@@ -109,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDto> saveCompletedOrders(CompleteOrderRequestDto completeOrderRequestDto) {
         List<CompleteOrder> completeOrders = validateCompleteOrderRequestDto(completeOrderRequestDto);
 
-        List<Long> courierIds = completeOrders.stream().map(CompleteOrder::getCourierId).collect(Collectors.toList());
+        Set<Long> courierIds = completeOrders.stream().map(CompleteOrder::getCourierId).collect(Collectors.toSet());
         List<Long> oderIds = completeOrders.stream().map(CompleteOrder::getOrderId).collect(Collectors.toList());
 
         Map<Long, Courier> couriers = getCouriersOrThrow(courierIds);
@@ -130,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
-    private Map<Long, Courier> getCouriersOrThrow(List<Long> courierIds) {
+    private Map<Long, Courier> getCouriersOrThrow(Set<Long> courierIds) {
         List<Courier> couriers = courierRepository.findAllById(courierIds);
         if (couriers.size() != courierIds.size()) {
             throw new BadRequest("Отсутствует courier в базе данных");
