@@ -115,7 +115,7 @@ public class OrderServiceImpl implements OrderService {
         Map<Long, Courier> couriers = getCouriersOrThrow(courierIds);
         Map<Long, Order> orders = getOrdersOrThrow(oderIds);
 
-        for (CompleteOrder completeOrder: completeOrders) {
+        for (CompleteOrder completeOrder : completeOrders) {
             Courier courier = couriers.get(completeOrder.getCourierId());
             Order order = orders.get(completeOrder.getOrderId());
 
@@ -130,35 +130,33 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
-    private Map<Long, Courier> getCouriersOrThrow(List<Long> courierIds){
-        List<Courier> couriers = new ArrayList<>(courierIds.size());
-        try {
-            couriers = courierRepository.findAllById(courierIds);
-        } catch (EntityNotFoundException e) {
-            throw new BadRequest("Отсутствует courier в базе данных: " + e.getMessage());
+    private Map<Long, Courier> getCouriersOrThrow(List<Long> courierIds) {
+        List<Courier> couriers = courierRepository.findAllById(courierIds);
+        if (couriers.size() != courierIds.size()) {
+            throw new BadRequest("Отсутствует courier в базе данных");
+        } else {
+            return couriers.stream()
+                    .collect(Collectors.toMap(Courier::getId, item -> item));
         }
-        return couriers.stream()
-                .collect(Collectors.toMap(Courier::getId, item -> item));
     }
 
-    private Map<Long, Order> getOrdersOrThrow(List<Long> courierIds){
-        List<Order> orders = new ArrayList<>(courierIds.size());
-        try {
-            orders = orderRepository.findAllById(courierIds);
-        } catch (EntityNotFoundException e) {
-            throw new BadRequest("Отсутствует courier в базе данных: " + e.getMessage());
+    private Map<Long, Order> getOrdersOrThrow(List<Long> orderIds) {
+        List<Order> orders = orderRepository.findAllById(orderIds);
+        if (orders.size() != orderIds.size()) {
+            throw new BadRequest("Отсутствует order в базе данных");
+        } else {
+            return orders.stream()
+                    .collect(Collectors.toMap(Order::getId, item -> item));
         }
-        return orders.stream()
-                .collect(Collectors.toMap(Order::getId, item -> item));
     }
 
     private List<CompleteOrder> validateCompleteOrderRequestDto(CompleteOrderRequestDto completeOrderRequestDto) {
         List<CompleteOrder> completeOrders = completeOrderRequestDto.getCompleteInfo();
-        for (CompleteOrder dto: completeOrders) {
+        for (CompleteOrder dto : completeOrders) {
             if (dto.getCourierId() == null) {
                 throw new BadRequest("Id курьера не может быть null");
             } else if (dto.getOrderId() == null) {
-                throw  new BadRequest("Id региона не может быть null");
+                throw new BadRequest("Id региона не может быть null");
             } else if (dto.getCompleteTime() == null) {
                 throw new BadRequest("Complete_time не может быть null");
             }
