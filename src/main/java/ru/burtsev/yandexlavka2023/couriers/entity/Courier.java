@@ -6,10 +6,9 @@ import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import ru.burtsev.yandexlavka2023.couriers.dto.CourierType;
+import ru.burtsev.yandexlavka2023.orders.entity.Order;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -82,6 +81,15 @@ public class Courier {
             this.workingHours.remove(workingHour);
             workingHour.getCouriers().remove(this);
         }
+    }
+
+    @OneToMany(mappedBy = "completedCouriers")
+    @JsonIgnore
+    private List<Order> completedOrders = new ArrayList<>();
+
+    public void addCompletedOrder(Order order) {
+        this.completedOrders.add(order);
+        order.setCompletedCouriers(this);
     }
 
     @Override

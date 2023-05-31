@@ -1,5 +1,6 @@
 package ru.burtsev.yandexlavka2023.orders.service;
 
+import ru.burtsev.yandexlavka2023.orders.dto.CompleteOrderRequestDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
 import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
 
@@ -11,5 +12,7 @@ public interface OrderService {
 
     OrderDto getOrderById(Long orderId);
 
-    List<OrderDto> getOrders(Integer offset, Integer limit);;
+    List<OrderDto> getOrders(Integer offset, Integer limit);
+
+    List<OrderDto> saveCompletedOrders(CompleteOrderRequestDto completeOrderRequestDto);
 }

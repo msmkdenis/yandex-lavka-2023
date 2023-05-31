@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.burtsev.yandexlavka2023.orders.dto.CompleteOrderRequestDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
 import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
 import ru.burtsev.yandexlavka2023.orders.service.OrderService;
@@ -36,5 +37,10 @@ public class OrderController {
             @Positive @RequestParam(defaultValue = "1") int limit
     ) {
         return orderService.getOrders(offset, limit);
+    }
+
+    @PostMapping("/complete")
+    public List<OrderDto> saveCompleteOrders(@RequestBody @Valid CompleteOrderRequestDto completeOrderRequestDto) {
+        return orderService.saveCompletedOrders(completeOrderRequestDto);
     }
 }

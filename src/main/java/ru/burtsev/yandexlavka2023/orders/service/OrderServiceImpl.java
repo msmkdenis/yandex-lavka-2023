@@ -1,28 +1,28 @@
 package ru.burtsev.yandexlavka2023.orders.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.burtsev.yandexlavka2023.Constants;
+import ru.burtsev.yandexlavka2023.couriers.entity.Courier;
 import ru.burtsev.yandexlavka2023.couriers.entity.Region;
+import ru.burtsev.yandexlavka2023.couriers.repository.CourierRepository;
 import ru.burtsev.yandexlavka2023.couriers.repository.RegionRepository;
 import ru.burtsev.yandexlavka2023.couriers.service.CouriersRequest;
 import ru.burtsev.yandexlavka2023.exception.BadRequest;
 import ru.burtsev.yandexlavka2023.exception.NotFound;
-import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderDto;
-import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
-import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
+import ru.burtsev.yandexlavka2023.orders.dto.*;
 import ru.burtsev.yandexlavka2023.orders.entity.DeliveryHour;
 import ru.burtsev.yandexlavka2023.orders.entity.Order;
 import ru.burtsev.yandexlavka2023.orders.mapper.OrderMapper;
 import ru.burtsev.yandexlavka2023.orders.repository.DeliveryHourRepository;
 import ru.burtsev.yandexlavka2023.orders.repository.OrderRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final DeliveryHourRepository deliveryHourRepository;
     private final RegionRepository regionRepository;
+    private final CourierRepository courierRepository;
 
     @Override
     @Transactional
@@ -79,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto getOrderById(Long orderId) {
-        Order order = findOrderOtThrow(orderId);
+        Order order = findOrderOrThrow(orderId);
 
         return OrderMapper.toOrderDto(order);
     }
@@ -98,9 +99,71 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
-    private Order findOrderOtThrow(Long id) {
+    private Order findOrderOrThrow(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new NotFound(String.format("Order с id=%d не найден!", id)));
+    }
+
+    @Override
+    @Transactional
+    public List<OrderDto> saveCompletedOrders(CompleteOrderRequestDto completeOrderRequestDto) {
+        List<CompleteOrder> completeOrders = validateCompleteOrderRequestDto(completeOrderRequestDto);
+
+        List<Long> courierIds = completeOrders.stream().map(CompleteOrder::getCourierId).collect(Collectors.toList());
+        List<Long> oderIds = completeOrders.stream().map(CompleteOrder::getOrderId).collect(Collectors.toList());
+
+        Map<Long, Courier> couriers = getCouriersOrThrow(courierIds);
+        Map<Long, Order> orders = getOrdersOrThrow(oderIds);
+
+        for (CompleteOrder completeOrder: completeOrders) {
+            Courier courier = couriers.get(completeOrder.getCourierId());
+            Order order = orders.get(completeOrder.getOrderId());
+
+            order.setCompletedTime(OffsetDateTime.parse(completeOrder.getCompleteTime(),
+                    Constants.inputFormatter.ISO_OFFSET_DATE_TIME));
+            courier.getCompletedOrders().add(order);
+            order.setCompletedCouriers(courier);
+        }
+
+        return orders.values().stream()
+                .map(OrderMapper::toOrderDto)
+                .collect(Collectors.toList());
+    }
+
+    private Map<Long, Courier> getCouriersOrThrow(List<Long> courierIds){
+        List<Courier> couriers = new ArrayList<>(courierIds.size());
+        try {
+            couriers = courierRepository.findAllById(courierIds);
+        } catch (EntityNotFoundException e) {
+            throw new BadRequest("Отсутствует courier в базе данных: " + e.getMessage());
+        }
+        return couriers.stream()
+                .collect(Collectors.toMap(Courier::getId, item -> item));
+    }
+
+    private Map<Long, Order> getOrdersOrThrow(List<Long> courierIds){
+        List<Order> orders = new ArrayList<>(courierIds.size());
+        try {
+            orders = orderRepository.findAllById(courierIds);
+        } catch (EntityNotFoundException e) {
+            throw new BadRequest("Отсутствует courier в базе данных: " + e.getMessage());
+        }
+        return orders.stream()
+                .collect(Collectors.toMap(Order::getId, item -> item));
+    }
+
+    private List<CompleteOrder> validateCompleteOrderRequestDto(CompleteOrderRequestDto completeOrderRequestDto) {
+        List<CompleteOrder> completeOrders = completeOrderRequestDto.getCompleteInfo();
+        for (CompleteOrder dto: completeOrders) {
+            if (dto.getCourierId() == null) {
+                throw new BadRequest("Id курьера не может быть null");
+            } else if (dto.getOrderId() == null) {
+                throw  new BadRequest("Id региона не может быть null");
+            } else if (dto.getCompleteTime() == null) {
+                throw new BadRequest("Complete_time не может быть null");
+            }
+        }
+        return completeOrders;
     }
 
     private List<CreateOrderDto> validateCreateOrderRequest(CreateOrderRequest createOrderRequest) {
