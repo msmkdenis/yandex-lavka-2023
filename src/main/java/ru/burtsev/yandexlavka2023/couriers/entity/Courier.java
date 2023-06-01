@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import ru.burtsev.yandexlavka2023.couriers.dto.CourierType;
 import ru.burtsev.yandexlavka2023.orders.entity.Order;
 
 import java.util.*;

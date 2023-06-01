@@ -1,11 +1,7 @@
 package ru.burtsev.yandexlavka2023.orders.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import ru.burtsev.yandexlavka2023.Constants;
-
-import java.time.OffsetDateTime;
 
 @Getter
 @Setter

@@ -2,6 +2,7 @@ package ru.burtsev.yandexlavka2023.couriers.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import ru.burtsev.yandexlavka2023.couriers.entity.CourierType;
 
 import java.util.Set;
 

@@ -1,9 +1,6 @@
 package ru.burtsev.yandexlavka2023.couriers.service;
 
-import ru.burtsev.yandexlavka2023.couriers.dto.CourierDto;
-import ru.burtsev.yandexlavka2023.couriers.dto.CreateCourierRequest;
-import ru.burtsev.yandexlavka2023.couriers.dto.CreateCouriersResponse;
-import ru.burtsev.yandexlavka2023.couriers.dto.GetCouriersResponse;
+import ru.burtsev.yandexlavka2023.couriers.dto.*;
 
 public interface CourierService {
 
@@ -14,4 +11,6 @@ public interface CourierService {
     GetCouriersResponse getCouriers(Integer offset, Integer limit);
 
     void deleteCourierById(Long courierId);
+
+    GetCourierMetaInfoResponse getCourierMetaInfo(Long courierId, String startDate, String endDate);
 }

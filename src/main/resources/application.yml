@@ -29,6 +29,15 @@ logging:
     org.hibernate.stat: debug
     root: info
 
+courier:
+  paymentCoefficient:
+    FOOT: 2
+    BIKE: 3
+    AUTO: 4
+  ratingCoefficient:
+    FOOT: 3
+    BIKE: 2
+    AUTO: 1
 
 ---
 spring:

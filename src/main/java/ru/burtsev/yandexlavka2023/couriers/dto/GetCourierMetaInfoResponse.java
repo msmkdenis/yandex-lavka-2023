@@ -4,21 +4,30 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ru.burtsev.yandexlavka2023.couriers.entity.CourierType;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateCourierDto {
+public class GetCourierMetaInfoResponse {
+
+    @JsonProperty("courier_id")
+    private Long courierId;
 
     @JsonProperty("courier_type")
     private CourierType courierType;
 
     @JsonProperty("regions")
-    private Set<Integer> regions;
+    private List<Integer> regions;
 
     @JsonProperty("working_hours")
-    private Set<String> workingHours;
+    private List<String> workingHours;
+
+    @JsonProperty("rating")
+    private Long rating;
+
+    @JsonProperty("earnings")
+    private Integer earnings;
 }

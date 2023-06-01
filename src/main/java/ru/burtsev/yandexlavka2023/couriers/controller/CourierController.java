@@ -7,11 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.burtsev.yandexlavka2023.couriers.dto.CourierDto;
-import ru.burtsev.yandexlavka2023.couriers.dto.CreateCourierRequest;
-import ru.burtsev.yandexlavka2023.couriers.dto.CreateCouriersResponse;
-import ru.burtsev.yandexlavka2023.couriers.dto.GetCouriersResponse;
-import ru.burtsev.yandexlavka2023.couriers.entity.Courier;
+import ru.burtsev.yandexlavka2023.couriers.dto.*;
 import ru.burtsev.yandexlavka2023.couriers.repository.CourierRepository;
 import ru.burtsev.yandexlavka2023.couriers.service.CourierService;
 
@@ -35,9 +31,13 @@ public class CourierController {
         return courierService.getCourierById(courierId);
     }
 
-    @GetMapping("/id/{courierId}")
-    public Courier getCourierId(@PathVariable Long courierId){
-        return courierRepository.findById(courierId).get();
+    @GetMapping("/meta-info/{courierId}")
+    public GetCourierMetaInfoResponse getCourierMetaInfo(
+            @PathVariable Long courierId,
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        return courierService.getCourierMetaInfo(courierId, startDate, endDate);
     }
 
     @GetMapping
