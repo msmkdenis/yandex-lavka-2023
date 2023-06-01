@@ -54,11 +54,11 @@ public class DeliveryHour {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DeliveryHour that = (DeliveryHour) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, startTime, endTime);
     }
 }

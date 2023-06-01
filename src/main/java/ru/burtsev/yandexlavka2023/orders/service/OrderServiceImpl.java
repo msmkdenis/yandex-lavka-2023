@@ -1,6 +1,5 @@
 package ru.burtsev.yandexlavka2023.orders.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public List<OrderDto> saveOrders(CreateOrderRequest createOrderRequest) {
+    public CreateOrderResponse saveOrders(CreateOrderRequest createOrderRequest) {
 
         List<CreateOrderDto> createOrderDtos = validateCreateOrderRequest(createOrderRequest);
 
@@ -45,10 +44,12 @@ public class OrderServiceImpl implements OrderService {
 
         for (CreateOrderDto dto : createOrderDtos) {
             Set<DeliveryHour> deliveryHours = OrderMapper.toDeliveryHours(dto);
+            System.out.println("delivery hours ++++++++++++++++++++++++++++");
+            deliveryHours.forEach(System.out::println);
 
             for (DeliveryHour hour : deliveryHours) {
                 Optional<DeliveryHour> deliveryHourEntity = deliveryHourRepository
-                        .findWorkingHourByStartTimeAndEndTime(hour.getStartTime(), hour.getEndTime());
+                        .findDeliveryHourByStartTimeAndEndTime(hour.getStartTime(), hour.getEndTime());
                 if (deliveryHourEntity.isEmpty()) {
                     deliveryHourRepository.save(hour);
                 }
@@ -72,10 +73,12 @@ public class OrderServiceImpl implements OrderService {
             orderRepository.save(order);
         }
 
-        return savedOrder
+        List<OrderDto> orders = savedOrder
                 .stream()
                 .map(OrderMapper::toOrderDto)
                 .collect(Collectors.toList());
+
+        return new CreateOrderResponse(orders);
     }
 
     @Override

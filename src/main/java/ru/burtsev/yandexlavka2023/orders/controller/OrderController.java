@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.burtsev.yandexlavka2023.orders.dto.CompleteOrderRequestDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
+import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderResponse;
 import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
 import ru.burtsev.yandexlavka2023.orders.service.OrderService;
 
@@ -22,7 +23,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    List<OrderDto> postOrders(@RequestBody @Valid CreateOrderRequest createOrderRequest) {
+    CreateOrderResponse postOrders(@RequestBody @Valid CreateOrderRequest createOrderRequest) {
         return orderService.saveOrders(createOrderRequest);
     }
 

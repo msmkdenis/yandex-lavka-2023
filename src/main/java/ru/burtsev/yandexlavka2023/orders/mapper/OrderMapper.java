@@ -30,13 +30,16 @@ public class OrderMapper {
 
         Set<String> deliveryHoursString = createOrderDto.getDeliveryHours();
 
+        System.out.println("deliveryStringHours======================");
+        deliveryHoursString.forEach(System.out::println);
+
         return deliveryHoursString.stream()
-                .map(workingHour -> {
-                    String[] split = workingHour.split("-");
+                .map(deliveryHour -> {
+                    String[] split = deliveryHour.split("-");
                     return DeliveryHour.builder()
                             .startTime(LocalTime.parse(split[0]))
                             .endTime(LocalTime.parse(split[1]))
-                            .startTimeEndTime(workingHour)
+                            .startTimeEndTime(deliveryHour)
                             .build();
                 })
                 .collect(Collectors.toSet());

@@ -12,7 +12,7 @@ import java.util.Set;
 @Repository
 public interface DeliveryHourRepository extends JpaRepository<DeliveryHour, Long> {
 
-    Optional<DeliveryHour> findWorkingHourByStartTimeAndEndTime(LocalTime startTime, LocalTime endTime);
+    Optional<DeliveryHour> findDeliveryHourByStartTimeAndEndTime(LocalTime startTime, LocalTime endTime);
 
     Set<DeliveryHour> findAllByStartTimeEndTimeIn(List<String> startTimeEndTime);
 }
