@@ -1,15 +1,16 @@
 package ru.burtsev.yandexlavka2023.orders.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.burtsev.yandexlavka2023.facade.DeliveryFacade;
+import ru.burtsev.yandexlavka2023.orders.dto.CompleteOrderRequestDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
+import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderResponse;
 import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
-import ru.burtsev.yandexlavka2023.orders.service.OrderService;
 
 import java.util.List;
 
@@ -19,10 +20,28 @@ import java.util.List;
 @Validated
 public class OrderController {
 
-    private final OrderService orderService;
+    private final DeliveryFacade deliveryFacade;
 
     @PostMapping
-    List<OrderDto> postOrders(@RequestBody @Valid CreateOrderRequest createOrderRequest) {
-        return orderService.saveOrders(createOrderRequest);
+    CreateOrderResponse postOrders(@RequestBody @Valid CreateOrderRequest createOrderRequest) {
+        return deliveryFacade.saveOrders(createOrderRequest);
+    }
+
+    @GetMapping("/{orderId}")
+    public OrderDto getOrderById(@PathVariable Long orderId){
+        return deliveryFacade.getOrderById(orderId);
+    }
+
+    @GetMapping
+    public List<OrderDto> getOrders(
+            @PositiveOrZero @RequestParam(defaultValue = "0") int offset,
+            @Positive @RequestParam(defaultValue = "1") int limit
+    ) {
+        return deliveryFacade.getOrders(offset, limit);
+    }
+
+    @PostMapping("/complete")
+    public List<OrderDto> saveCompleteOrders(@RequestBody @Valid CompleteOrderRequestDto completeOrderRequestDto) {
+        return deliveryFacade.saveCompletedOrders(completeOrderRequestDto);
     }
 }

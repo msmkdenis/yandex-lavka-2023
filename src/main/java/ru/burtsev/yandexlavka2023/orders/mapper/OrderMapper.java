@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class OrderMapper {
 
-
     public static Order toOrder(CreateOrderDto orderDto,
                                 Region region,
                                 Set<DeliveryHour> deliveryHours) {
@@ -27,16 +26,15 @@ public class OrderMapper {
     }
 
     public static Set<DeliveryHour> toDeliveryHours(CreateOrderDto createOrderDto) {
-
         Set<String> deliveryHoursString = createOrderDto.getDeliveryHours();
 
         return deliveryHoursString.stream()
-                .map(workingHour -> {
-                    String[] split = workingHour.split("-");
+                .map(deliveryHour -> {
+                    String[] split = deliveryHour.split("-");
                     return DeliveryHour.builder()
                             .startTime(LocalTime.parse(split[0]))
                             .endTime(LocalTime.parse(split[1]))
-                            .startTimeEndTime(workingHour)
+                            .startTimeEndTime(deliveryHour)
                             .build();
                 })
                 .collect(Collectors.toSet());

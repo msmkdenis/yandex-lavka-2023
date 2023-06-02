@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import ru.burtsev.yandexlavka2023.couriers.entity.Courier;
 import ru.burtsev.yandexlavka2023.couriers.entity.Region;
 
 import java.time.OffsetDateTime;
@@ -29,8 +30,12 @@ public class Order {
     private Float weight;
 
     @ManyToOne
-   @JoinColumn(name = "region_id")
+    @JoinColumn(name = "region_id")
     private Region regions;
+
+    @ManyToOne
+    @JoinColumn(name = "courier_complete_id")
+    private Courier completedCouriers;
 
     @Column(name = "cost")
     private Integer cost;

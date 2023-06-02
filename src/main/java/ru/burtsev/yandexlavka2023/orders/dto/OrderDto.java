@@ -12,7 +12,7 @@ import java.util.Set;
 @Builder
 public class OrderDto {
 
-    @JsonProperty("id")
+    @JsonProperty("order_id")
     private Long id;
 
     @JsonProperty("weight")

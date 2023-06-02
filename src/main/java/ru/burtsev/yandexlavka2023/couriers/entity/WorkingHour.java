@@ -19,12 +19,6 @@ import java.util.Set;
 @Table(name = "working_hours")
 public class WorkingHour {
 
-    public WorkingHour(LocalTime startTime, LocalTime endTime, String startTimeEndTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.startTimeEndTime = startTimeEndTime;
-    }
-
     @Override
     public String toString() {
         return startTime + "-" + endTime;
@@ -49,6 +43,7 @@ public class WorkingHour {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
     @JsonIgnore
+    @Builder.Default
     private Set<Courier> couriers = new HashSet<>();
 
     @JsonIgnore

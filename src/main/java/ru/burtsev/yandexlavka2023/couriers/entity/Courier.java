@@ -5,11 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import ru.burtsev.yandexlavka2023.couriers.dto.CourierType;
+import ru.burtsev.yandexlavka2023.orders.entity.Order;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -66,6 +64,7 @@ public class Courier {
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "working_hours_id"))
     @JsonIgnore
+    @Builder.Default
     private Set<WorkingHour> workingHours = new HashSet<>();
 
     public void addWorkingHour(WorkingHour workingHour) {
@@ -82,6 +81,16 @@ public class Courier {
             this.workingHours.remove(workingHour);
             workingHour.getCouriers().remove(this);
         }
+    }
+
+    @OneToMany(mappedBy = "completedCouriers")
+    @JsonIgnore
+    @Builder.Default
+    private List<Order> completedOrders = new ArrayList<>();
+
+    public void addCompletedOrder(Order order) {
+        this.completedOrders.add(order);
+        order.setCompletedCouriers(this);
     }
 
     @Override

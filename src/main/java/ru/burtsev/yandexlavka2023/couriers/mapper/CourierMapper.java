@@ -47,21 +47,6 @@ public class CourierMapper {
                 .collect(Collectors.toSet());
     }
 
-/*    public static Courier toCourier(CreateCourierDto courierDto) {
-        return Courier.builder()
-                .courierType(courierDto.getCourierType())
-                .workingHours(courierDto.getWorkingHours().stream()
-                        .map(workingHour -> {
-                            String[] split = workingHour.split("-");
-                            return new WorkingHour(LocalTime.parse(split[0]), LocalTime.parse(split[1]));
-                        })
-                        .collect(Collectors.toSet()))
-                .regions(courierDto.getRegions().stream()
-                        .map(Region::new)
-                        .collect(Collectors.toSet()))
-                .build();
-    }*/
-
     public static CourierDto toCourierDto(Courier courier) {
         return CourierDto.builder()
                 .id(courier.getId())

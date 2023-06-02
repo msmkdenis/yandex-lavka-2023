@@ -21,6 +21,13 @@ import java.time.format.DateTimeParseException;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final String BAD_REQUEST = "Bad request";
+    private static final String NOT_FOUND = "Not found";
+    private static final String BAD_REQUEST_URL = "http://yandex-lavka-2023:8080/errors/bad-request";
+
+    private static final String NOT_FOUND_URL = "http://yandex-lavka-2023:8080/errors/not-found";
+
+
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss SSS z")
             .withZone(ZoneId.systemDefault());
 
@@ -32,8 +39,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problemDetail.setTitle("Bad request");
-        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
+        problemDetail.setTitle(BAD_REQUEST);
+        problemDetail.setType(URI.create(BAD_REQUEST_URL));
         problemDetail.setStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
@@ -41,20 +48,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadRequest.class)
     ProblemDetail handleBadRequest(BadRequest e) {
-        log.info(e.getClass().toString());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
-        problemDetail.setTitle("Bad request");
-        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
+        problemDetail.setTitle(BAD_REQUEST);
+        problemDetail.setType(URI.create(BAD_REQUEST_URL));
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return problemDetail;
     }
 
     @ExceptionHandler(NotFound.class)
     ProblemDetail handleNotFound(NotFound e) {
-        log.info(e.getClass().toString());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-        problemDetail.setTitle("Not found");
-        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/not-found"));
+        problemDetail.setTitle(NOT_FOUND);
+        problemDetail.setType(URI.create(NOT_FOUND_URL));
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return problemDetail;
     }
@@ -63,12 +68,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DateTimeParseException.class)
     ProblemDetail handleDateTimeParseException(DateTimeParseException e) {
-        log.info(e.getClass().toString());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 "Wrong working hours format, must be HH:mm-HH:mm. " + e.getMessage());
-        problemDetail.setTitle("Bad request");
-        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
+        problemDetail.setTitle(BAD_REQUEST);
+        problemDetail.setType(URI.create(BAD_REQUEST_URL));
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return problemDetail;
     }
@@ -79,8 +83,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                         HttpStatusCode status,
                                                         WebRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problemDetail.setTitle("Bad request");
-        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
+        problemDetail.setTitle(BAD_REQUEST);
+        problemDetail.setType(URI.create(BAD_REQUEST_URL));
         problemDetail.setStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
@@ -92,8 +96,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 e.getMessage());
-        problemDetail.setTitle("Bad request");
-        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
+        problemDetail.setTitle(BAD_REQUEST);
+        problemDetail.setType(URI.create(BAD_REQUEST_URL));
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return problemDetail;
     }
@@ -105,8 +109,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problemDetail.setTitle("Bad request");
-        problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
+        problemDetail.setTitle(BAD_REQUEST);
+        problemDetail.setType(URI.create(BAD_REQUEST_URL));
         problemDetail.setStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setProperty(TIMESTAMP, formatter.format(Instant.now()));
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
