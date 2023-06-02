@@ -21,7 +21,6 @@ public interface CourierRepository extends JpaRepository<Courier, Long> {
     @EntityGraph(attributePaths = {"regions", "workingHours"})
     Optional<Courier> findById(Long courierId);
 
-    //@EntityGraph(attributePaths = {"regions", "workingHours"})
     List<Courier> findAllById(Iterable<Long> courierIds);
 
     @Query("select c from Courier c where c.id=?1")

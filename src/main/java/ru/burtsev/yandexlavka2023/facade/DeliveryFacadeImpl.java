@@ -3,7 +3,6 @@ package ru.burtsev.yandexlavka2023.facade;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.burtsev.yandexlavka2023.util.Constants;
 import ru.burtsev.yandexlavka2023.configuration.CourierCoefficient;
 import ru.burtsev.yandexlavka2023.couriers.dto.*;
 import ru.burtsev.yandexlavka2023.couriers.entity.Courier;
@@ -15,6 +14,7 @@ import ru.burtsev.yandexlavka2023.orders.dto.*;
 import ru.burtsev.yandexlavka2023.orders.entity.Order;
 import ru.burtsev.yandexlavka2023.orders.mapper.OrderMapper;
 import ru.burtsev.yandexlavka2023.orders.service.OrderService;
+import ru.burtsev.yandexlavka2023.util.Constants;
 
 import java.time.Duration;
 import java.time.LocalDate;
