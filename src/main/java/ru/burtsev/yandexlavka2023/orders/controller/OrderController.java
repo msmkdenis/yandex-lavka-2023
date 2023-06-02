@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.burtsev.yandexlavka2023.facade.DeliveryFacade;
 import ru.burtsev.yandexlavka2023.orders.dto.CompleteOrderRequestDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderResponse;
@@ -21,15 +22,16 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final DeliveryFacade deliveryFacade;
 
     @PostMapping
     CreateOrderResponse postOrders(@RequestBody @Valid CreateOrderRequest createOrderRequest) {
-        return orderService.saveOrders(createOrderRequest);
+        return deliveryFacade.saveOrders(createOrderRequest);
     }
 
     @GetMapping("/{orderId}")
     public OrderDto getOrderById(@PathVariable Long orderId){
-        return orderService.getOrderById(orderId);
+        return deliveryFacade.getOrderById(orderId);
     }
 
     @GetMapping
@@ -37,11 +39,11 @@ public class OrderController {
             @PositiveOrZero @RequestParam(defaultValue = "0") int offset,
             @Positive @RequestParam(defaultValue = "1") int limit
     ) {
-        return orderService.getOrders(offset, limit);
+        return deliveryFacade.getOrders(offset, limit);
     }
 
     @PostMapping("/complete")
     public List<OrderDto> saveCompleteOrders(@RequestBody @Valid CompleteOrderRequestDto completeOrderRequestDto) {
-        return orderService.saveCompletedOrders(completeOrderRequestDto);
+        return deliveryFacade.saveCompletedOrders(completeOrderRequestDto);
     }
 }

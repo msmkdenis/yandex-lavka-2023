@@ -1,5 +1,6 @@
 package ru.burtsev.yandexlavka2023.couriers.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import ru.burtsev.yandexlavka2023.couriers.entity.CourierType;
@@ -25,9 +26,11 @@ public class GetCourierMetaInfoResponse {
     @JsonProperty("working_hours")
     private List<String> workingHours;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("rating")
     private Long rating;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("earnings")
     private Integer earnings;
 }

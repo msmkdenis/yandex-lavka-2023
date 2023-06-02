@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.burtsev.yandexlavka2023.couriers.dto.*;
 import ru.burtsev.yandexlavka2023.couriers.repository.CourierRepository;
 import ru.burtsev.yandexlavka2023.couriers.service.CourierService;
+import ru.burtsev.yandexlavka2023.facade.DeliveryFacade;
 
 @RestController
 @Validated
@@ -20,15 +21,16 @@ public class CourierController {
 
     private final CourierService courierService;
     private final CourierRepository courierRepository;
+    private final DeliveryFacade deliveryFacade;
 
     @PostMapping
     public CreateCouriersResponse saveCouriers(@RequestBody @Valid CreateCourierRequest courierRequest){
-        return courierService.saveCouriers(courierRequest);
+        return deliveryFacade.saveCouriers(courierRequest);
     }
 
     @GetMapping("/{courierId}")
     public CourierDto getCourierById(@PathVariable Long courierId){
-        return courierService.getCourierById(courierId);
+        return deliveryFacade.getCourierById(courierId);
     }
 
     @GetMapping("/meta-info/{courierId}")
@@ -37,7 +39,7 @@ public class CourierController {
             @RequestParam String startDate,
             @RequestParam String endDate
     ) {
-        return courierService.getCourierMetaInfo(courierId, startDate, endDate);
+        return deliveryFacade.getCourierMetaInfo(courierId, startDate, endDate);
     }
 
     @GetMapping
@@ -45,11 +47,11 @@ public class CourierController {
             @PositiveOrZero @RequestParam(defaultValue = "0") int offset,
             @Positive @RequestParam(defaultValue = "1") int limit
     ) {
-        return courierService.getCouriers(offset, limit);
+        return deliveryFacade.getCouriers(offset, limit);
     }
 
     @DeleteMapping("/{courierId}")
     public void deleteCourierById(@PathVariable Long courierId){
-        courierService.deleteCourierById(courierId);
+        deliveryFacade.deleteCourierById(courierId);
     }
 }

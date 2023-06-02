@@ -41,7 +41,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadRequest.class)
     ProblemDetail handleBadRequest(BadRequest e) {
-        log.info(e.getClass().toString());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
         problemDetail.setTitle("Bad request");
         problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/bad-request"));
@@ -51,7 +50,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotFound.class)
     ProblemDetail handleNotFound(NotFound e) {
-        log.info(e.getClass().toString());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
         problemDetail.setTitle("Not found");
         problemDetail.setType(URI.create("http://yandex-lavka-2023:8080/errors/not-found"));
@@ -63,7 +61,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DateTimeParseException.class)
     ProblemDetail handleDateTimeParseException(DateTimeParseException e) {
-        log.info(e.getClass().toString());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 "Wrong working hours format, must be HH:mm-HH:mm. " + e.getMessage());

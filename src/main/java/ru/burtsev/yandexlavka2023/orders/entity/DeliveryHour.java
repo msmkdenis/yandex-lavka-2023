@@ -38,6 +38,7 @@ public class DeliveryHour {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
     @JsonIgnore
+    @Builder.Default
     private Set<Order> orders = new HashSet<>();
 
     @JsonIgnore

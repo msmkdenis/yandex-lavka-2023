@@ -29,6 +29,7 @@ public class Region {
     private Integer regionId;
 
     @OneToMany(mappedBy = "regions")
+    @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
     public void addOrder(Order order) {
@@ -41,6 +42,7 @@ public class Region {
             CascadeType.PERSIST,
             CascadeType.MERGE})
     @JsonIgnore
+    @Builder.Default
     private Set<Courier> couriers = new HashSet<>();
 
     @Override

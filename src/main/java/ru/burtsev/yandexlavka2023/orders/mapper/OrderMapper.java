@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class OrderMapper {
 
-
     public static Order toOrder(CreateOrderDto orderDto,
                                 Region region,
                                 Set<DeliveryHour> deliveryHours) {
@@ -27,11 +26,7 @@ public class OrderMapper {
     }
 
     public static Set<DeliveryHour> toDeliveryHours(CreateOrderDto createOrderDto) {
-
         Set<String> deliveryHoursString = createOrderDto.getDeliveryHours();
-
-        System.out.println("deliveryStringHours======================");
-        deliveryHoursString.forEach(System.out::println);
 
         return deliveryHoursString.stream()
                 .map(deliveryHour -> {

@@ -5,13 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.burtsev.yandexlavka2023.configuration.CourierCoefficient;
 import ru.burtsev.yandexlavka2023.couriers.dto.*;
 import ru.burtsev.yandexlavka2023.couriers.entity.Courier;
 import ru.burtsev.yandexlavka2023.couriers.entity.Region;
 import ru.burtsev.yandexlavka2023.couriers.entity.WorkingHour;
 import ru.burtsev.yandexlavka2023.couriers.mapper.CourierMapper;
-import ru.burtsev.yandexlavka2023.couriers.repository.CourierMetaInfo;
+import ru.burtsev.yandexlavka2023.couriers.repository.CourierFullInfo;
 import ru.burtsev.yandexlavka2023.couriers.repository.CourierRepository;
 import ru.burtsev.yandexlavka2023.couriers.repository.RegionRepository;
 import ru.burtsev.yandexlavka2023.couriers.repository.WorkingHourRepository;
@@ -19,15 +18,11 @@ import ru.burtsev.yandexlavka2023.couriers.service.CourierService;
 import ru.burtsev.yandexlavka2023.couriers.service.CouriersRequest;
 import ru.burtsev.yandexlavka2023.exception.BadRequest;
 import ru.burtsev.yandexlavka2023.exception.NotFound;
-import ru.burtsev.yandexlavka2023.orders.entity.Order;
-import ru.burtsev.yandexlavka2023.orders.repository.OrderRepository;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,8 +33,6 @@ public class CourierServiceImpl implements CourierService {
     private final CourierRepository courierRepository;
     private final WorkingHourRepository workingHourRepository;
     private final RegionRepository regionRepository;
-    private final OrderRepository orderRepository;
-    private final CourierCoefficient courierCoefficient;
 
     @Override
     @Transactional
@@ -62,7 +55,6 @@ public class CourierServiceImpl implements CourierService {
                 }
             }
 
-
             for (Region region : regions) {
                 Optional<Region> regionEntity = regionRepository.findRegionByRegionId(region.getRegionId());
                 if (regionEntity.isEmpty()) {
@@ -70,8 +62,15 @@ public class CourierServiceImpl implements CourierService {
                 }
             }
 
-            List<Integer> regionIds = regions.stream().map(Region::getRegionId).collect(Collectors.toList());
-            List<String> startTimeEndTime = workingHours.stream().map(WorkingHour::getStartTimeEndTime).collect(Collectors.toList());
+            List<Integer> regionIds = regions
+                    .stream()
+                    .map(Region::getRegionId)
+                    .collect(Collectors.toList());
+
+            List<String> startTimeEndTime = workingHours
+                    .stream()
+                    .map(WorkingHour::getStartTimeEndTime)
+                    .collect(Collectors.toList());
 
             Set<Region> regionsEntity = regionRepository.findAllByRegionIdIsIn(regionIds);
             Set<WorkingHour> workingHoursEntity = workingHourRepository.findAllByStartTimeEndTimeIn(startTimeEndTime);
@@ -90,14 +89,14 @@ public class CourierServiceImpl implements CourierService {
     }
 
     @Override
-    public CourierDto getCourierById(Long courierId) {
+    public CourierDto findCourierById(Long courierId) {
         Courier courier = findCourierOtThrow(courierId);
 
         return CourierMapper.toCourierDto(courier);
     }
 
     @Override
-    public GetCouriersResponse getCouriers(Integer offset, Integer limit) {
+    public GetCouriersResponse findCouriers(Integer offset, Integer limit) {
         if (offset == limit) {
             throw new BadRequest(String.format("Параметры offset=%d и limit=%d не должны быть равны", offset, limit));
         }
@@ -106,7 +105,10 @@ public class CourierServiceImpl implements CourierService {
                 .stream().collect(Collectors.toList());
 
         return GetCouriersResponse.builder()
-                .couriers(couriers.stream().map(CourierMapper::toCourierDto).collect(Collectors.toList()))
+                .couriers(couriers
+                        .stream()
+                        .map(CourierMapper::toCourierDto)
+                        .collect(Collectors.toList()))
                 .offset(offset)
                 .limit(limit)
                 .build();
@@ -118,43 +120,19 @@ public class CourierServiceImpl implements CourierService {
     }
 
     @Override
-    public GetCourierMetaInfoResponse getCourierMetaInfo(Long courierId, String startDate, String endDate) {
+    public List<Courier> findCouriersOrThrow(Set<Long> courierIds) {
+        List<Courier> couriers = courierRepository.findAllById(courierIds);
+        if (couriers.size() != courierIds.size()) {
+            throw new BadRequest("Отсутствует courier в базе данных");
+        } else {
+            return couriers;
+        }
+    }
 
-        OffsetDateTime startOffsetDate =
-                OffsetDateTime.from(LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        .atStartOfDay(ZoneOffset.UTC)
-                        .toOffsetDateTime());
-
-        OffsetDateTime endOffsetDate =
-                OffsetDateTime.from(LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        .atStartOfDay(ZoneOffset.UTC)
-                        .toOffsetDateTime());
-
-        List<Order> completedOrders = orderRepository
-                .findCompletedOrderByCourierBetweenDates(courierId, startOffsetDate, endOffsetDate);
-
-        CourierMetaInfo courierMetaInfo = courierRepository.getCourierMetaInfo(courierId);
-
-        Map<String, Integer> paymentCoefficient = courierCoefficient.getPaymentCoefficient();
-        Map<String, Integer> ratingCoefficient = courierCoefficient.getRatingCoefficient();
-
-        Duration duration = Duration.between(startOffsetDate, endOffsetDate);
-
-        return GetCourierMetaInfoResponse.builder()
-                .courierId(courierMetaInfo.getId())
-                .courierType(courierMetaInfo.getCourierType())
-                .regions(courierMetaInfo.getRegions().stream()
-                        .map(Region::getRegionId)
-                        .collect(Collectors.toList()))
-                .workingHours(courierMetaInfo.getWorkingHours().stream()
-                        .map(WorkingHour::getStartTimeEndTime)
-                        .collect(Collectors.toList()))
-                .earnings(completedOrders.stream()
-                        .mapToInt(Order::getCost).sum() *
-                        paymentCoefficient.get(String.valueOf(courierMetaInfo.getCourierType())))
-                .rating((long) (((double) completedOrders.size() / (double) duration.toHours())
-                        * (double) ratingCoefficient.get(String.valueOf(courierMetaInfo.getCourierType()))))
-                .build();
+    @Override
+    public CourierFullInfo findCourierShortInfo(Long courierId) {
+        return courierRepository.findCourierShortInfo(courierId)
+                .orElseThrow(() -> new NotFound(String.format("Courier с id=%d не найден!", courierId)));
     }
 
     private List<CreateCourierDto> validateCreateCourierRequest(CreateCourierRequest courierRequest) {

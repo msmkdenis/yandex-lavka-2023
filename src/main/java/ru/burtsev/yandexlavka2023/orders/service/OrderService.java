@@ -1,19 +1,22 @@
 package ru.burtsev.yandexlavka2023.orders.service;
 
-import ru.burtsev.yandexlavka2023.orders.dto.CompleteOrderRequestDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderResponse;
 import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
+import ru.burtsev.yandexlavka2023.orders.entity.Order;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface OrderService {
 
     CreateOrderResponse saveOrders(CreateOrderRequest createOrderRequest);
 
-    OrderDto getOrderById(Long orderId);
+    OrderDto findOrderById(Long orderId);
 
-    List<OrderDto> getOrders(Integer offset, Integer limit);
+    List<OrderDto> findOrders(Integer offset, Integer limit);
 
-    List<OrderDto> saveCompletedOrders(CompleteOrderRequestDto completeOrderRequestDto);
+    List<Order> findOrdersOrThrow(List<Long> orderIds);
+
+    List<Order> findCompletedOrdersByCourierBetweenDates(Long courierId, OffsetDateTime startDate, OffsetDateTime endDate);
 }

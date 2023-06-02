@@ -49,6 +49,7 @@ public class WorkingHour {
                     CascadeType.PERSIST,
                     CascadeType.MERGE})
     @JsonIgnore
+    @Builder.Default
     private Set<Courier> couriers = new HashSet<>();
 
     @JsonIgnore

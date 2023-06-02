@@ -64,6 +64,7 @@ public class Courier {
             joinColumns = @JoinColumn(name = "courier_id"),
             inverseJoinColumns = @JoinColumn(name = "working_hours_id"))
     @JsonIgnore
+    @Builder.Default
     private Set<WorkingHour> workingHours = new HashSet<>();
 
     public void addWorkingHour(WorkingHour workingHour) {
@@ -84,6 +85,7 @@ public class Courier {
 
     @OneToMany(mappedBy = "completedCouriers")
     @JsonIgnore
+    @Builder.Default
     private List<Order> completedOrders = new ArrayList<>();
 
     public void addCompletedOrder(Order order) {
