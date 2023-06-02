@@ -35,7 +35,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final DeliveryHourRepository deliveryHourRepository;
     private final RegionRepository regionRepository;
-    //private final CourierRepository courierRepository;
 
     @Override
     @Transactional
@@ -47,8 +46,6 @@ public class OrderServiceImpl implements OrderService {
 
         for (CreateOrderDto dto : createOrderDtos) {
             Set<DeliveryHour> deliveryHours = OrderMapper.toDeliveryHours(dto);
-            System.out.println("delivery hours ++++++++++++++++++++++++++++");
-            deliveryHours.forEach(System.out::println);
 
             for (DeliveryHour hour : deliveryHours) {
                 Optional<DeliveryHour> deliveryHourEntity = deliveryHourRepository

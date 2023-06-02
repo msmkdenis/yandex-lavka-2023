@@ -11,7 +11,6 @@ import ru.burtsev.yandexlavka2023.orders.dto.CompleteOrderRequestDto;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderRequest;
 import ru.burtsev.yandexlavka2023.orders.dto.CreateOrderResponse;
 import ru.burtsev.yandexlavka2023.orders.dto.OrderDto;
-import ru.burtsev.yandexlavka2023.orders.service.OrderService;
 
 import java.util.List;
 
@@ -21,7 +20,6 @@ import java.util.List;
 @Validated
 public class OrderController {
 
-    private final OrderService orderService;
     private final DeliveryFacade deliveryFacade;
 
     @PostMapping

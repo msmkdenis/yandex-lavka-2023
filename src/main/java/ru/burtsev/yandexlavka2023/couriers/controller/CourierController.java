@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.burtsev.yandexlavka2023.couriers.dto.*;
-import ru.burtsev.yandexlavka2023.couriers.repository.CourierRepository;
-import ru.burtsev.yandexlavka2023.couriers.service.CourierService;
 import ru.burtsev.yandexlavka2023.facade.DeliveryFacade;
 
 @RestController
@@ -19,8 +17,6 @@ import ru.burtsev.yandexlavka2023.facade.DeliveryFacade;
 @RequestMapping(value = "/couriers")
 public class CourierController {
 
-    private final CourierService courierService;
-    private final CourierRepository courierRepository;
     private final DeliveryFacade deliveryFacade;
 
     @PostMapping
