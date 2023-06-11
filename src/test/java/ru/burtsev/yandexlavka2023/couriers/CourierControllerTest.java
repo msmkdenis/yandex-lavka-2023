@@ -94,7 +94,7 @@ public class CourierControllerTest {
     @Test
     @DisplayName(value = "Метод createCourierRequest - not valid 400")
     void saveCouriers_not_validInput_400() throws Exception {
-        //when(deliveryFacade.saveCouriers(any(CreateCourierRequest.class))).thenReturn(couriersResponse);
+        when(deliveryFacade.saveCouriers(any(CreateCourierRequest.class))).thenReturn(couriersResponse);
 
         MvcResult result = mvc.perform(post("/couriers")
                         .content(objectMapper.writeValueAsString(Collections.EMPTY_LIST))
